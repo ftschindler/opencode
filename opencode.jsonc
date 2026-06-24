@@ -7,5 +7,6 @@
         "apiKey": "{file:.env.ovhcloud.apiKey}"
       }
     }
-  }
+  },
+  "disabled_providers": ["opencode"]
 }

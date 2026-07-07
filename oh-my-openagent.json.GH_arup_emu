@@ -6,7 +6,7 @@
     },
     "categories": {
         "visual-engineering": {
-            "model": "github-copilot/gemini-3.1-pro",
+            "model": "github-copilot/gemini-3.1-pro-preview",
             "fallback_models": [
                 "github-copilot/claude-sonnet-4.6",
                 "github-copilot/gpt-5.4"
@@ -30,6 +30,7 @@
         "ultrabrain": {
             "model": "github-copilot/gpt-5.5",
             "fallback_models": [
+                "github-copilot/claude-opus-4.8",
                 "github-copilot/claude-opus-4.7",
                 "github-copilot/gpt-5.3-codex"
             ],
@@ -62,8 +63,10 @@
     },
     "agents": {
         "sisyphus": {
-            "model": "github-copilot/claude-opus-4.7",
+            "model": "github-copilot/claude-opus-4.8",
             "fallback_models": [
+                "github-copilot/claude-opus-4.8-fast",
+                "github-copilot/claude-opus-4.7",
                 "github-copilot/claude-sonnet-4.6",
                 "github-copilot/gpt-5.5"
             ]
@@ -75,7 +78,7 @@
         "oracle": {
             "model": "github-copilot/gpt-5.5",
             "fallback_models": [
-                "github-copilot/gemini-3.1-pro",
+                "github-copilot/gemini-3.1-pro-preview",
                 "github-copilot/claude-opus-4.7"
             ]
         },
@@ -94,15 +97,17 @@
             ]
         },
         "multimodal-looker": {
-            "model": "github-copilot/gemini-3.1-pro",
+            "model": "github-copilot/gemini-3.1-pro-preview",
             "fallback_models": [
                 "github-copilot/gemini-2.5-pro",
                 "github-copilot/gpt-5.4"
             ]
         },
         "prometheus": {
-            "model": "github-copilot/claude-opus-4.7",
+            "model": "github-copilot/claude-opus-4.8",
             "fallback_models": [
+                "github-copilot/claude-opus-4.8-fast",
+                "github-copilot/claude-opus-4.7",
                 "github-copilot/gpt-5.5"
             ]
         },
@@ -117,7 +122,7 @@
             "model": "github-copilot/gpt-5.5",
             "fallback_models": [
                 "github-copilot/claude-opus-4.7",
-                "github-copilot/gemini-3.1-pro"
+                "github-copilot/gemini-3.1-pro-preview"
             ]
         },
         "atlas": {

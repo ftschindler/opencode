@@ -1,7 +1,7 @@
 {
   "plugin": ["oh-my-openagent@latest"],
   "$schema": "https://opencode.ai/config.json",
-  "model": "ovhcloud/qwen3.5-397b-a17b",
+  "model": "github-copilot/claude-sonnet-4.6",
   "provider": {
     "ovhcloud": {
       "options": {

@@ -1,0 +1,153 @@
+// Profile-based variants -- Option A. One env var switches BOTH layers:
+//
+//   OPENCODE_CONFIG_DIR=~/.config/opencode/profiles/<name> opencode
+//
+// opencode reads profiles/<name>/opencode.json (enabled_providers = hard
+// provider isolation, plus that profile's default model), and OMO derives its
+// own profile name from the same path via profileNameFromOpenCodeConfigDir.
+// OMO_PROFILE=<name> overrides the derivation if needed.
+//
+// Layering is base -> [harness] -> profile -> profile.[harness], so team_mode
+// below is shared and each profile carries only its model config.
+//
+// A mistyped profile name fails loudly ("Activated omo profile X does not
+// exist"), unlike a mispointed symlink.
+//
+// disabled_providers here is a redundant assertion: enabled_providers in the
+// harness config already makes the other provider unloadable. It stays as a
+// tripwire against a mis-pinned model.
+//
+// The agents pinned at the base layer fill two slots upstream's Copilot routing
+// cannot reach. They are inherited by every profile and by a plain run with no
+// profile selected; the ovh profile overrides both with its own pins.
+
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/omo.schema.json",
+  "[opencode]": {
+    "team_mode": {
+      "enabled": true,
+      "max_parallel_members": 4
+    },
+    "agents": {
+      "prometheus": {
+        "model": "github-copilot/claude-opus-5(xhigh)"
+      },
+      "multimodal-looker": {
+        "model": "github-copilot/gpt-5.6-sol(low)"
+      }
+    }
+  },
+  "profiles": {
+    "github-copilot": {
+      "[opencode]": {
+        "disabled_providers": [
+          "ovhcloud",
+          "opencode"
+        ]
+      }
+    },
+    "ovhcloud": {
+      "[opencode]": {
+        "disabled_providers": [
+          "github-copilot",
+          "opencode"
+        ],
+        "agents": {
+          "sisyphus": {
+            "model": "ovhcloud/qwen3.5-397b-a17b"
+          },
+          "hephaestus": {
+            "model": "ovhcloud/gpt-oss-120b"
+          },
+          "oracle": {
+            "model": "ovhcloud/qwen3.5-397b-a17b"
+          },
+          "explore": {
+            "model": "ovhcloud/qwen3.5-9b"
+          },
+          "librarian": {
+            "model": "ovhcloud/qwen3.5-9b"
+          },
+          "multimodal-looker": {
+            "model": "ovhcloud/qwen3.6-27b"
+          },
+          "prometheus": {
+            "model": "ovhcloud/gpt-oss-120b"
+          },
+          "metis": {
+            "model": "ovhcloud/qwen3.6-27b"
+          },
+          "momus": {
+            "model": "ovhcloud/qwen3.5-397b-a17b"
+          },
+          "atlas": {
+            "model": "ovhcloud/gpt-oss-120b"
+          },
+          "sisyphus-junior": {
+            "model": "ovhcloud/gpt-oss-120b"
+          }
+        },
+        "categories": {
+          "visual-engineering": {
+            "models": [
+              "ovhcloud/qwen3.6-27b",
+              "ovhcloud/qwen2.5-vl-72b-instruct",
+              "ovhcloud/mistral-small-3.2-24b-instruct-2506"
+            ]
+          },
+          "deep": {
+            "models": [
+              "ovhcloud/gpt-oss-120b",
+              "ovhcloud/qwen3.5-397b-a17b",
+              "ovhcloud/qwen3-32b"
+            ]
+          },
+          "quick": {
+            "temperature": 0.3,
+            "models": [
+              "ovhcloud/qwen3.5-9b",
+              "ovhcloud/gpt-oss-20b",
+              "ovhcloud/mistral-7b-instruct-v0.3"
+            ]
+          },
+          "ultrabrain": {
+            "temperature": 0.2,
+            "models": [
+              "ovhcloud/qwen3.5-397b-a17b",
+              "ovhcloud/gpt-oss-120b",
+              "ovhcloud/meta-llama-3_3-70b-instruct"
+            ]
+          },
+          "artistry": {
+            "models": [
+              "ovhcloud/qwen3.6-27b",
+              "ovhcloud/gpt-oss-120b"
+            ]
+          },
+          "unspecified-low": {
+            "models": [
+              "ovhcloud/qwen3.5-9b",
+              "ovhcloud/gpt-oss-20b"
+            ]
+          },
+          "unspecified-high": {
+            "models": [
+              "ovhcloud/gpt-oss-120b",
+              "ovhcloud/qwen3.6-27b"
+            ]
+          },
+          "writing": {
+            "models": [
+              "ovhcloud/qwen3.6-27b",
+              "ovhcloud/qwen3-32b"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "_migrations": [
+    "2026-07-opencode-config-unification",
+    "2026-08-reasoning-unification"
+  ]
+}

@@ -1,8 +1,8 @@
 {
-    "dependencies": {
-        "@opencode-ai/plugin": "1.17.9"
-    },
-    "devDependencies": {
-        "bun-types": "latest"
-    }
+  "dependencies": {
+    "@opencode-ai/plugin": "1.18.23"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  }
 }

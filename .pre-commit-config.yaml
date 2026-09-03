@@ -1,4 +1,14 @@
+# Hooks are managed with prek (a drop-in pre-commit replacement, same file format).
+# Run once per clone:  prek install
 repos:
+  - repo: local
+    hooks:
+      - id: config-invariants
+        name: opencode config invariants
+        entry: scripts/check-config.py
+        language: script
+        pass_filenames: false
+        always_run: true
   - repo: https://github.com/google/yamlfmt
     rev: 21ca5323a9c87ee37a434e0ca908efc0a89daa07 # frozen: v0.21.0
     hooks:
@@ -16,7 +26,10 @@ repos:
       - id: check-json
       - id: check-toml
       - id: pretty-format-json
-        args: [--autofix, --no-sort-keys, --indent=4]
+        # 2 spaces matches what opencode and these scripts write, so the hook
+        # does not fight them on every commit.
+        args: [--autofix, --no-sort-keys, --indent=2]
       - id: check-symlinks
       - id: debug-statements
       - id: fix-byte-order-marker
+      - id: detect-private-key

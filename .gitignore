@@ -1,5 +1,12 @@
 node_modules
 package-lock.json
 bun.lock
-.env.ovhcloud.apiKey
+# Any credential file in a profile. The glob covers .env and variants such
+# as .env.PAT or .env.old, which a narrower 'profiles/*/.env' would miss.
+profiles/*/.env
+profiles/*/.env.*
+!profiles/*/.env.sample
 plugins/git-ai.ts
+.omo/
+tui.json
+profiles/*/package.json

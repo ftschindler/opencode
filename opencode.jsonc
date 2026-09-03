@@ -1,13 +1,7 @@
 {
-  "plugin": ["oh-my-openagent@latest"],
+  "plugin": [
+    "oh-my-openagent@latest"
+  ],
   "$schema": "https://opencode.ai/config.json",
-  "model": "github-copilot/claude-sonnet-4.6",
-  "provider": {
-    "ovhcloud": {
-      "options": {
-        "apiKey": "{file:.env.ovhcloud.apiKey}"
-      }
-    }
-  },
-  "disabled_providers": ["opencode"]
+  "enabled_providers": []
 }

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": [
+    "oh-my-openagent@latest"
+  ],
+  "enabled_providers": [
+    "ovhcloud"
+  ],
+  "model": "ovhcloud/qwen3.5-397b-a17b",
+  "provider": {
+    "ovhcloud": {
+      "options": {
+        "apiKey": "{file:.env}"
+      }
+    }
+  }
+}

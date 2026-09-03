@@ -1,0 +1,105 @@
+profiles/github-copilot/README.md
+  s_46a78a20fd92ca::t_f4efe0f8262a45 3-6,8,10-12,14-16,18-20,24-26,33,35-43,45-50,52,54-57,59-61
+  s_46a78a20fd92ca::t_158118cccbb995 21
+  s_46a78a20fd92ca::t_d3988d030fb404 1-2,7,9,13,17,22-23,27-32,34,44,51,53,58
+omo.jsonc.PROFILES
+  s_46a78a20fd92ca::t_31826bb2efe07e 41-49
+opencode.jsonc
+  s_46a78a20fd92ca::t_31826bb2efe07e 2-4
+  s_46a78a20fd92ca::t_68a952888df370 6
+package.json
+  s_46a78a20fd92ca::t_0747d35c558a90 2-7
+AGENTS.md
+  s_9c8c924bff1eb4::t_8cdf09e63ccc3f 5-26
+  s_71e0a1231b0f4e::t_10445522226389 1-4
+scripts/set-provider.py
+  s_46a78a20fd92ca::t_40f535e140b42a 1-110,128,135-137,147-156,158-185,196-232
+  s_46a78a20fd92ca::t_c41974d3c70fd4 111-127,129-134,138-146
+  s_46a78a20fd92ca::t_4cb92d1b871288 157,186-195
+.gitignore
+  s_46a78a20fd92ca::t_cd972a294b3d6f 6,8
+  s_46a78a20fd92ca::t_b0d5fb63932588 11-12
+  s_46a78a20fd92ca::t_5a5e952602f43b 4-5,7
+.pre-commit-config.yaml
+  s_46a78a20fd92ca::t_bfd1867f9c3578 1-2
+  s_46a78a20fd92ca::t_b7ebbdac7546a0 4-11,29-31,35
+profiles/ovhcloud/opencode.json
+  s_46a78a20fd92ca::t_cd972a294b3d6f 13
+  s_46a78a20fd92ca::t_31826bb2efe07e 1-12,14-17
+profiles/github-copilot/opencode.json
+  s_46a78a20fd92ca::t_cff3b3fafbfde0 1-8,10
+  s_46a78a20fd92ca::t_32da0bf3f66cff 9
+scripts/check-config.py
+  s_46a78a20fd92ca::t_bfd1867f9c3578 10
+  s_46a78a20fd92ca::t_13e595d1bec136 1-9,11-16,18-310,329,332,339,361-399,401-417
+  s_46a78a20fd92ca::t_7a228dce72c2f5 17,311-328,330-331,333-338,340-360,400
+README.md
+  h_0f8f9341a40674 245,249-250,254-257,272,274
+  s_cb7cff970e55a5::t_2fe32fc2054f5e 22,114,122,134,137-138,141-143,198,205-208,211,213-214,226,241,246-248,251-253,258-264,266,271,273,275-277
+  s_cb7cff970e55a5::t_b4ddd51e4ecb08 31,127,131,135,199,210,212,238-240,242-244,270
+  s_46a78a20fd92ca::t_fcef0befd898b5 47-49,57-59,63-90,153-155
+  s_46a78a20fd92ca::t_8b574ababb6421 187,191-192,194-197
+  s_46a78a20fd92ca::t_4cb92d1b871288 227-237
+  s_46a78a20fd92ca::t_bfd1867f9c3578 40,216-219
+  s_46a78a20fd92ca::t_fd52bc17378fe7 120-121,123-125,128-129,200-204
+  s_46a78a20fd92ca::t_9b65c42906b366 144-147,156-186,188-190,193,209,215,220-225,269
+  s_46a78a20fd92ca::t_d77d9a340e6b2f 148-152
+  s_46a78a20fd92ca::t_7b17c5c14a0dc6 23-30,104-111,118-119,126,130,132-133,136,139-140
+  s_46a78a20fd92ca::t_13d643dd580cff 6,10-11,13-21
+  s_46a78a20fd92ca::t_b3de1bca095026 32-39,41-46,50-56,60-62,91-103,112-113,115-117
+  s_30922035361b57::t_4966506d3c77cb 3-4,8-9,12
+  s_46a78a20fd92ca::t_eb53db650cf77b 265,267-268
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "0c11fed22f83d7bc1be39f62d2878537cba12915",
+  "prompts": {},
+  "humans": {
+    "h_0f8f9341a40674": {
+      "author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_30922035361b57": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fa458fdccffely3aKHur10pEm9",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    },
+    "s_46a78a20fd92ca": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa458fdccffely3aKHur10pEm9",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    },
+    "s_71e0a1231b0f4e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fa89ce4f4ffedccthI14OANuFl",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    },
+    "s_9c8c924bff1eb4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fa389e5cfffedV6nhStn6fKrS2",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    },
+    "s_cb7cff970e55a5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fa3e3b092ffekP19ath1jPpMdL",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}

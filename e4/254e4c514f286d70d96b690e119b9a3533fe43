@@ -1,0 +1,40 @@
+skills/update-opencode-config/check-all.py
+  s_46a78a20fd92ca::t_9ca31f114a55f5 1-151
+.pre-commit-config.yaml
+  s_46a78a20fd92ca::t_5c0871b3a80b49 8
+README.md
+  s_46a78a20fd92ca::t_3845ccbae97b5e 39,53,113,180,190,209-210,221-223,256-264,286
+  s_46a78a20fd92ca::t_db3ed6a60ea115 213-220
+skills/update-opencode-config/check-plugin.sh
+  s_46a78a20fd92ca::t_9ca31f114a55f5 1-150
+skills/update-opencode-config/check-config.py
+  s_46a78a20fd92ca::t_6ac9b742649c30 1-11,13-16,18-378,403-440,442-458
+  s_46a78a20fd92ca::t_620f8f6a357a40 12
+  s_46a78a20fd92ca::t_1306c070ebd7db 17,379-402,441
+skills/update-opencode-config/set-provider.py
+  s_46a78a20fd92ca::t_620f8f6a357a40 11-13,109,182
+  s_46a78a20fd92ca::t_6ac9b742649c30 1-10,14-108,110-181,183-247
+skills/update-opencode-config/SKILL.md
+  s_46a78a20fd92ca::t_9ca31f114a55f5 1,3-15,27-257,259-267,271-418,420-421,423-445
+  s_46a78a20fd92ca::t_89c542126531b3 2,16-26,258,268-270,419,422
+skills/update-opencode-config/check-resolution.sh
+  s_46a78a20fd92ca::t_9ca31f114a55f5 1-366
+skills/update-opencode-config/check-models.sh
+  s_46a78a20fd92ca::t_9ca31f114a55f5 1-93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "e4254e4c514f286d70d96b690e119b9a3533fe43",
+  "prompts": {},
+  "sessions": {
+    "s_46a78a20fd92ca": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa458fdccffely3aKHur10pEm9",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}

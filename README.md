@@ -1,33 +1,28 @@
-# opencode config
+# Felix opencode config
 
-This is my [opencode](https://github.com/anomalyco/opencode) config,
-meant to be provider-agnostic and cross-machine sharable.
+This is my (I'm [Felix](https://github.com/ftschindler), hi!)
+[opencode](https://github.com/anomalyco/opencode) config.
 
-Shared across machines:
+It's meant to be provider-agnostic and cross-machine sharable.
+I use it for work and at home because there are central things I'd
+like to share and not re-implement.
 
-- [tools](tools/)
-- [AGENTS.md](AGENTS.md)
-- plugin selection and configuration
-- provider configuration: which providers exist, and which models each uses
+## is there anything of interest here if you're not Felix?
 
-Not shared: provider credentials. Each lives in its own profile as a gitignored
-`.env`, so a session has no access to another provider's key.
+There might be. What I share across machines with this config is:
 
-Both provider and plugin configuration are organised as [profiles](profiles/),
-one directory per provider.
+- [tools](tools/), see the [tools/README.md](tools/README.md) in there
+- [AGENTS.md](AGENTS.md), which currently lives here and likely wont in the future
+- my way of dealing with multiple isolated provider configurations,
+  which I organise as [profiles](profiles/) (one directory per provider)
+- the _plugins_ I'm using (most notably [oh-my-openagent](https://www.npmjs.com/package/oh-my-openagent))
+  and what that means in a multi-provider setup
+- a [skill](skills/) to update that configuration (as it's quite involved)
+  with a set of deterministic cheking scripts invoked by the skill as well as
+  by my [pre-commit checks](.pre-commit-config.yaml)
 
-It runs the [oh-my-openagent](https://www.npmjs.com/package/oh-my-openagent)
-plugin, which routes each agent and each category of work to a model. Two
-providers are wired up: GitHub Copilot and OVHcloud.
-
-**A session uses one provider only.** Providers are kept separate for privacy
-and data-compliance reasons, so a session must never see both. Which provider is
-active is a property of the machine, not of the session: one box runs GitHub
-Copilot, another runs OVHcloud, and the choice changes rarely.
-
-Isolation fails closed. The base config enables no providers at all, so a run
-that picks up no profile gets no models and stops, rather than quietly gaining
-access to both.
+The rest of this readme is the usual AI slop that came out of the session
+where I built this.
 
 ## Getting started on a fresh machine
 

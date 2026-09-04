@@ -9,11 +9,12 @@ Each rule here exists because breaking it fails silently at runtime rather than
 loudly at startup: a provider quietly unreachable, a model pin inherited by the
 wrong provider, a credential committed. Runs as a prek hook, or by hand:
 
-    ./scripts/check-config.py
+    ./skills/update-opencode-config/check-config.py
 """
 
 from __future__ import annotations
 
+import os
 import re
 import subprocess
 import sys
@@ -22,7 +23,22 @@ from pathlib import Path
 
 import json5
 
-REPO = Path(__file__).resolve().parent.parent
+def find_repo_root(start: Path) -> Path:
+    """Walk up to the directory holding opencode.jsonc.
+
+    Not a fixed number of parents: this file has moved once already, and a
+    hardcoded parent count fails silently -- the wrong directory is still a
+    valid Path, so checks run against nothing and report success.
+    """
+    for candidate in [start, *start.parents]:
+        if (candidate / "opencode.jsonc").is_file():
+            return candidate
+    raise SystemExit(
+        f"cannot locate the opencode config repo above {start}: no opencode.jsonc found"
+    )
+
+
+REPO = find_repo_root(Path(__file__).resolve().parent)
 
 BASE_CONFIG = REPO / "opencode.jsonc"
 OMO_CONFIG = REPO / "omo.jsonc.PROFILES"
@@ -360,6 +376,30 @@ def check_credentials_untracked(names: list[str], tracked: set[str], report: Rep
                 break
 
 
+def check_hook_entries_exist(report: Report) -> None:
+    """Every local prek hook must point at an executable that exists.
+
+    These scripts have moved once. A stale `entry:` does not fail loudly: prek
+    reports the hook as passing work it never ran, so the invariants silently
+    stop being enforced.
+    """
+    config = REPO / ".pre-commit-config.yaml"
+    if not config.exists():
+        report.warn("hook-entry", "no .pre-commit-config.yaml; invariants are not enforced on commit")
+        return
+
+    for line in config.read_text().splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("entry:"):
+            continue
+        entry = stripped.split(":", 1)[1].strip()
+        target = REPO / entry.split()[0]
+        if not target.exists():
+            report.error("hook-entry", f".pre-commit-config.yaml points at '{entry}', which does not exist")
+        elif not os.access(target, os.X_OK):
+            report.error("hook-entry", f"{entry} is not executable, so the hook cannot run it")
+
+
 def main() -> int:
     report = Report()
 
@@ -398,6 +438,7 @@ def main() -> int:
     check_base_pins_are_overridden(omo, names, report)
     check_mutual_exclusion(omo, names, report)
     check_credentials_untracked(names, tracked, report)
+    check_hook_entries_exist(report)
 
     for warning in report.warnings:
         print(f"warning  {warning}")

@@ -36,7 +36,7 @@ git clone <this-repo> ~/.config/opencode
 cd ~/.config/opencode
 
 ln -sfn ~/.config/opencode/omo.jsonc.PROFILES ~/.omo/omo.jsonc   # step 2
-./scripts/set-provider.py                                        # step 4, reports what is missing
+./skills/update-opencode-config/set-provider.py                                        # step 4, reports what is missing
 prek install                                                     # optional
 ```
 
@@ -50,7 +50,7 @@ prek install                                                     # optional
 4. **Select this machine's provider.**
 
    ```bash
-   ./scripts/set-provider.py ovhcloud
+   ./skills/update-opencode-config/set-provider.py ovhcloud
    ```
 
    Run it with no arguments to see what is selected and what is still missing.
@@ -110,7 +110,7 @@ there if you need it.
 ## Setting this machine's provider
 
 ```bash
-./scripts/set-provider.py ovhcloud   # then log out and back in
+./skills/update-opencode-config/set-provider.py ovhcloud   # then log out and back in
 ```
 
 The script rewrites `~/.config/environment.d/opencode.conf` and reports whether
@@ -177,7 +177,7 @@ plugin derives its own profile name from that same directory.
 
    ```bash
    OPENCODE_CONFIG_DIR=~/.config/opencode/profiles/<id> \
-     ~/.agents/skills/update-omo-config/check-resolution.sh
+     skills/update-opencode-config/check-resolution.sh
    ```
 5. **Override any base pin that names another provider.** Pins in the top-level
    `[opencode]` block are inherited by every profile, so one naming
@@ -187,7 +187,7 @@ plugin derives its own profile name from that same directory.
 7. **Verify the invariants, then the credential:**
 
    ```bash
-   ./scripts/check-config.py
+   ./skills/update-opencode-config/check-config.py
    OPENCODE_CONFIG_DIR=~/.config/opencode/profiles/<id> \
      opencode run --model <id>/<cheap-model> "Reply with exactly: OK"
    ```
@@ -206,11 +206,21 @@ looks for it in the active profile's own `opencode.json`.
 ## Checking that the config is healthy
 
 ```bash
-./scripts/check-config.py                               # this repo's own invariants
-npx oh-my-openagent doctor                              # config conformance
-~/.agents/skills/update-omo-config/check-plugin.sh      # plugin build vs npm
-~/.agents/skills/update-omo-config/check-models.sh      # pins naming dead models
-~/.agents/skills/update-omo-config/check-resolution.sh  # agents with no model
+./skills/update-opencode-config/check-config.py                                   # this repo's own invariants
+skills/update-opencode-config/check-all.py   # every profile, one table
+```
+
+`check-all.py` audits all profiles at once — credential, provider isolation,
+doctor, dead pins, unresolved slots — because a check under one profile says
+nothing about the others. To drill into one, set the profile and run the
+individual checks:
+
+```bash
+export OPENCODE_CONFIG_DIR=~/.config/opencode/profiles/<id>
+npx oh-my-openagent doctor                                        # config conformance
+skills/update-opencode-config/check-plugin.sh      # plugin build vs npm
+skills/update-opencode-config/check-models.sh      # pins naming dead models
+skills/update-opencode-config/check-resolution.sh  # agents with no model
 ```
 
 `check-config.py` runs as a git hook, so the invariants below are enforced on
@@ -243,8 +253,15 @@ The last script is the least obvious and the most useful. It reports any agent
 whose model resolves to nothing, or to a provider the active profile is meant to
 exclude. Neither condition produces an error on its own.
 
-The `update-omo-config` skill drives all of this and proposes replacements. It
-lives in `~/.agents/skills/` rather than in this repository.
+The `update-opencode-config` skill drives all of this and proposes replacements.
+It lives in this repository, at `skills/update-opencode-config/`, and opencode
+picks it up from there — including when a profile is active, since skills are
+searched in both the profile directory and its parent.
+
+The skill and the prek hook deliberately share the same executables, so the
+checks cannot drift from the config they check. The skill is not meant to be
+installed anywhere else: it assumes this repository's layout, and a copy under
+`~/.agents/skills/` would shadow it by name.
 
 ## Optional: git-ai integration
 
@@ -266,7 +283,7 @@ Without this step the config still works, and the plugin is a no-op if absent.
 | `omo.jsonc.PROFILES` | Plugin model config, one block per profile |
 | `profiles/<provider>/opencode.json` | Per-profile config: one provider, its credentials, its default model |
 | `profiles/<provider>/.env` | That provider's credential, gitignored; `.env.sample` is tracked |
-| `scripts/` | `check-config.py` (invariants, pre-commit) and `set-provider.py` |
+| `skills/update-opencode-config/` | The maintenance skill, plus the scripts its prek hook shares |
 | `tools/`, `plugins/` | Local tool and plugin definitions, shared by all profiles |
 | `AGENTS.md` | Writing style guidance for agents working in this repo |
 

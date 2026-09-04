@@ -5,7 +5,7 @@ repos:
     hooks:
       - id: config-invariants
         name: opencode config invariants
-        entry: scripts/check-config.py
+        entry: skills/update-opencode-config/check-config.py
         language: script
         pass_filenames: false
         always_run: true

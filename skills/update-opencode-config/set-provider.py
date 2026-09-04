@@ -8,9 +8,9 @@
 The choice is a property of the machine, not of a session: it lives in
 ``~/.config/environment.d/opencode.conf`` and changes rarely.
 
-    ./scripts/set-provider.py                 # show the current selection
-    ./scripts/set-provider.py ovhcloud        # select a provider
-    ./scripts/set-provider.py --check         # report readiness, change nothing
+    ./skills/update-opencode-config/set-provider.py                 # show the current selection
+    ./skills/update-opencode-config/set-provider.py ovhcloud        # select a provider
+    ./skills/update-opencode-config/set-provider.py --check         # report readiness, change nothing
 
 Providers are kept isolated for privacy and data-compliance reasons, so a
 session sees exactly one. Selecting nothing is safe: the base config enables no
@@ -26,7 +26,22 @@ from pathlib import Path
 
 import json5
 
-REPO = Path(__file__).resolve().parent.parent
+def find_repo_root(start: Path) -> Path:
+    """Walk up to the directory holding opencode.jsonc.
+
+    Not a fixed number of parents: this file has moved once already, and a
+    hardcoded parent count fails silently -- the wrong directory is still a
+    valid Path, so checks run against nothing and report success.
+    """
+    for candidate in [start, *start.parents]:
+        if (candidate / "opencode.jsonc").is_file():
+            return candidate
+    raise SystemExit(
+        f"cannot locate the opencode config repo above {start}: no opencode.jsonc found"
+    )
+
+
+REPO = find_repo_root(Path(__file__).resolve().parent)
 PROFILES_DIR = REPO / "profiles"
 ENV_FILE = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "environment.d" / "opencode.conf"
 VARIABLE = "OPENCODE_CONFIG_DIR"
@@ -91,7 +106,7 @@ def write_selection(name: str) -> None:
         "# One provider per session, always -- providers are kept separate for\n"
         "# privacy and data-compliance reasons, so a session must never see both.\n"
         "#\n"
-        "# Written by scripts/set-provider.py. Changing this needs a fresh login:\n"
+        "# Written by skills/update-opencode-config/set-provider.py. Changing this needs a fresh login:\n"
         "# environment.d is read when the systemd user session starts.\n"
         "#\n"
         "# If this variable is unset, opencode falls back to its base config, which\n"
@@ -164,7 +179,7 @@ def report(selected: str | None) -> None:
     print()
 
     if selected is None:
-        print(TODO + f"no provider selected. Run: ./scripts/set-provider.py <{'|'.join(profiles)}>")
+        print(TODO + f"no provider selected. Run: ./skills/update-opencode-config/set-provider.py <{'|'.join(profiles)}>")
         return
     if selected not in profiles:
         print(WARN + f"{ENV_FILE} names '{selected}', which is not a profile directory")

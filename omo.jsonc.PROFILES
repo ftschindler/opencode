@@ -43,7 +43,28 @@
         "disabled_providers": [
           "ovhcloud",
           "opencode"
-        ]
+        ],
+        // Highest-volume slots. Upstream wants a cheap/fast model here
+        // (gpt-6-luna-fast for quick, kimi-highspeed for explore/librarian)
+        // but every candidate names a provider this profile does not enable,
+        // so the chain degrades to claude-haiku-4.5 -- $1.00/1M input against
+        // gpt-6-luna's $0.10, on exactly the slots fired most often.
+        // gpt-6-luna serves tool_calls + parallel_tool_calls and carries a
+        // 272K window (haiku: 136K). Pinned because the routing cannot reach
+        // it on Copilot, not as a preference.
+        "agents": {
+          "explore": {
+            "model": "github-copilot/gpt-6-luna"
+          },
+          "librarian": {
+            "model": "github-copilot/gpt-6-luna"
+          }
+        },
+        "categories": {
+          "quick": {
+            "model": "github-copilot/gpt-6-luna"
+          }
+        }
       }
     },
     "ovhcloud": {
@@ -95,11 +116,20 @@
               "ovhcloud/mistral-small-3.2-24b-instruct-2506"
             ]
           },
-          "deep": {
+          // omo 5.x split the former "deep" category into deep-low/deep-high.
+          // The old "deep" key is inert, so both slots fell through to
+          // upstream routing and resolved onto github-copilot -- across the
+          // provider isolation this setup exists to enforce. Pin both.
+          "deep-low": {
             "models": [
               "ovhcloud/gpt-oss-120b",
+              "ovhcloud/qwen3.6-27b"
+            ]
+          },
+          "deep-high": {
+            "models": [
               "ovhcloud/qwen3.5-397b-a17b",
-              "ovhcloud/qwen3-32b"
+              "ovhcloud/gpt-oss-120b"
             ]
           },
           "quick": {
@@ -139,7 +169,7 @@
           "writing": {
             "models": [
               "ovhcloud/qwen3.6-27b",
-              "ovhcloud/qwen3-32b"
+              "ovhcloud/qwen3.8-27b"
             ]
           }
         }
@@ -148,6 +178,11 @@
   },
   "_migrations": [
     "2026-07-opencode-config-unification",
-    "2026-08-reasoning-unification"
+    "2026-08-reasoning-unification",
+    // Applied by hand (the deep -> deep-low rename above). The automatic
+    // migration cannot write here: ~/.omo/omo.jsonc is a symlink to this
+    // file, and omo's migration writer rejects any resolved path that is not
+    // literally ~/.omo/omo.json[c]. Marking it done stops the retry loop.
+    "2026-09-category-deep-split"
   ]
 }

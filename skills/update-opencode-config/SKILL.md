@@ -231,6 +231,31 @@ return a full model list — a fine-grained GitHub PAT does exactly this, listin
 every model, then failing the first real request with `AI_APICallError: Bad
 Request`. **Only a real request verifies a credential.**
 
+**5. A migration cannot write through the `~/.omo/omo.jsonc` symlink.** The
+writer accepts only a *resolved* path named `omo.json` or `omo.jsonc` inside a
+`.omo` directory. Here the link points at `omo.jsonc.PROFILES` in this repo, so
+reads work and every migration write is refused:
+
+```text
+Migration target is not an omo config path: ~/.config/opencode/omo.jsonc.PROFILES
+```
+
+The attempt is not abandoned. `~/.omo/.migration-journal.json` keeps
+`targetWritten: false` and retries on **every start**, so one stuck migration
+warns indefinitely. `check-config.py` reports both the unwritable target and a
+pending journal.
+
+**Read the journal before clearing it.** Its `targetWrite` payload is a snapshot
+taken at the first attempt, so a migration stuck across later config edits will
+overwrite them if it ever succeeds — a repair that makes the write work is the
+more dangerous of the two available repairs.
+
+Recognise the state; do not reach for a remedy on your own. Writing a marker
+into `_migrations` by hand asserts that the migration's content is already
+present, which no script here can check — only a person reading the diff can.
+Report what the journal names and what the config does or does not contain, and
+let them decide.
+
 ## Steps
 
 ### 0. Pre-flight: make the config recoverable
@@ -308,6 +333,10 @@ rm -rf ~/.cache/opencode/packages/oh-my-openagent@latest   # print the path firs
 
 This is the plugin's own invalidation — its `postinstall.mjs` calls
 `invalidateOpenCodePluginCache()`, which removes exactly these directories.
+
+After the restart, check for `~/.omo/.migration-journal.json`. An update can run
+a migration on first start, and here that write is refused (trap 5), leaving a
+journal that retries silently on every start afterwards.
 
 **Two paths that do not work, both verified:**
 
@@ -435,6 +464,7 @@ After any plugin operation, confirm the config survived — installers write to
 
 ```bash
 diff -r "$B" ~/.config/opencode 2>&1 | grep -i 'only in\|differ'   # $B from step 0
+ls -la ~/.omo/.migration-journal.json 2>/dev/null                  # a half-run migration
 ```
 
 Restore from the backup, never from memory and never from version control alone,

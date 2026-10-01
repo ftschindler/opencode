@@ -376,6 +376,68 @@ def check_credentials_untracked(names: list[str], tracked: set[str], report: Rep
                 break
 
 
+def check_migrations_can_write(report: Report) -> None:
+    """The plugin's migration writer rejects a target it resolved through a symlink.
+
+    It accepts only a resolved path named omo.json or omo.jsonc, inside a .omo
+    directory. Here ~/.omo/omo.jsonc is a symlink to omo.jsonc.PROFILES in this
+    repo, so reads work and every migration write is refused. The layout is
+    deliberate and this is a warning, not a fault to repair.
+    """
+    link = Path.home() / ".omo" / "omo.jsonc"
+    if not link.exists():
+        report.warn("migration-target", f"{link} does not exist; the plugin has no config to read")
+        return
+
+    resolved = link.resolve()
+    in_omo_dir = resolved.parent.name == ".omo"
+    named_right = resolved.name in ("omo.json", "omo.jsonc")
+    if in_omo_dir and named_right:
+        return
+
+    report.warn(
+        "migration-target",
+        f"~/.omo/omo.jsonc resolves to {resolved}, which the plugin's migration "
+        "writer rejects: reads work, but every migration fails on start until its "
+        "marker is added to _migrations by hand",
+    )
+
+
+def check_no_pending_migration_journal(report: Report) -> None:
+    """A journal left with targetWritten false retries on every start.
+
+    Its payload is a snapshot from the first attempt, so a migration that has sat
+    here through later edits will overwrite them if it ever succeeds. Read the
+    payload before clearing it.
+    """
+    journal_path = Path.home() / ".omo" / ".migration-journal.json"
+    if not journal_path.exists():
+        return
+
+    try:
+        journal = load(journal_path)
+    except Exception as exc:  # noqa: BLE001 - any parse failure is the same finding
+        report.error("migration-journal", f"{journal_path} exists and cannot be parsed: {exc}")
+        return
+
+    if journal.get("targetWritten") is not False:
+        return
+
+    migration_id = journal.get("migrationId", "<unnamed>")
+    applied = migration_id in (load(OMO_CONFIG).get("_migrations") or [])
+    already = (
+        "its marker is already in _migrations, so this journal is stale"
+        if applied
+        else "its marker is absent from _migrations, so the migration has not been applied"
+    )
+    report.error(
+        "migration-journal",
+        f"a pending migration '{migration_id}' retries on every start; {already}. "
+        f"Read {journal_path} before clearing it: its payload is a snapshot from "
+        "the first attempt and can overwrite later edits",
+    )
+
+
 def check_hook_entries_exist(report: Report) -> None:
     """Every local prek hook must point at an executable that exists.
 
@@ -438,6 +500,8 @@ def main() -> int:
     check_base_pins_are_overridden(omo, names, report)
     check_mutual_exclusion(omo, names, report)
     check_credentials_untracked(names, tracked, report)
+    check_migrations_can_write(report)
+    check_no_pending_migration_journal(report)
     check_hook_entries_exist(report)
 
     for warning in report.warnings:

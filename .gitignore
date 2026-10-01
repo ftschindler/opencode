@@ -10,3 +10,8 @@ plugins/git-ai.ts
 .omo/
 tui.json
 profiles/*/package.json
+# Machine-local runtime state that opencode and the plugin write into whatever
+# profile is active: a declined LSP install, the plugin's nudge frequency. Both
+# describe this box rather than the configuration, and both regenerate.
+profiles/*/lsp-install-decisions.json
+profiles/*/oh-my-openagent/

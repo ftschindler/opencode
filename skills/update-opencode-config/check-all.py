@@ -18,11 +18,14 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
 
 import json5
+
+MODEL_ID = re.compile(r"^([A-Za-z0-9_.-]+)/[A-Za-z0-9_.:-]+$")
 
 SKILL_DIR = Path(__file__).resolve().parent
 CONFIG_DIR = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "opencode"
@@ -81,7 +84,11 @@ def audit(name: str) -> dict[str, str]:
     row["credential"] = credential_kind(name)
 
     code, out = run(["opencode", "models"], directory)
-    served = sorted({line.split("/", 1)[0] for line in out.splitlines() if "/" in line})
+    # run() merges stderr, where the plugin writes warnings containing absolute
+    # paths -- a bare '/' test reads those as model ids and cries isolation breach.
+    served = sorted(
+        {m.group(1) for line in out.splitlines() if (m := MODEL_ID.match(line.strip()))}
+    )
     row["providers"] = ",".join(served) if served else "(none)"
     row["isolated"] = "yes" if served == [name] else f"NO -> {row['providers']}"
 

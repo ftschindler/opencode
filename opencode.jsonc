@@ -3,5 +3,22 @@
     "oh-my-openagent@latest"
   ],
   "$schema": "https://opencode.ai/config.json",
-  "enabled_providers": []
+  "enabled_providers": [],
+  // Document conversion (PDF, DOCX, PPTX, XLSX, images, audio, ...) to
+  // Markdown. Provider-agnostic, so it belongs in the base layer: a profile
+  // overrides the base key by key rather than replacing it, so every profile
+  // inherits this one entry and there is nothing to keep in sync.
+  //
+  // markitdown-mcp already depends on markitdown[all], so the full set of
+  // converters is pulled in; the package itself declares no extras.
+  "mcp": {
+    "markitdown": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "markitdown-mcp@0.0.1a7"
+      ],
+      "enabled": true
+    }
+  }
 }

@@ -17,6 +17,9 @@ There might be. What I share across machines with this config is:
   which I organise as [profiles](profiles/) (one directory per provider)
 - the _plugins_ I'm using (most notably [oh-my-openagent](https://www.npmjs.com/package/oh-my-openagent))
   and what that means in a multi-provider setup
+- which settings belong in the shared base layer and which belong to a single
+  provider, with document conversion (PDF, DOCX, ...) via
+  [markitdown](https://github.com/microsoft/markitdown) as the worked example
 - a [skill](skills/) to update that configuration (as it's quite involved)
   with a set of deterministic cheking scripts invoked by the skill as well as
   by my [pre-commit checks](.pre-commit-config.yaml)
@@ -195,8 +198,41 @@ A profile layers over the base config rather than replacing it, and holds only
 what differs; `tools/`, `plugins/` and `AGENTS.md` are inherited. Credentials are
 deliberately *not* shared: each provider's key lives inside its own profile, so a
 session running one provider has no access to another's credentials, not even a
-path to them. The `plugin` entry is repeated in every profile because the doctor
-looks for it in the active profile's own `opencode.json`.
+path to them. `plugin` is the exception to the inheritance: it is repeated in
+every profile only because the doctor looks for it in the active profile's own
+`opencode.json`, not because it would otherwise be lost.
+
+## What goes in the base config, and what goes in a profile
+
+A profile does not replace the base config. opencode merges the two key by key
+and the profile wins, so `opencode.jsonc` is a real base layer rather than a
+fallback that an active profile switches off. Check it yourself if you doubt it —
+add a key to the base, then look for it with a profile active:
+
+```bash
+OPENCODE_CONFIG_DIR=~/.config/opencode/profiles/<id> opencode debug config
+```
+
+That makes the split simple. Anything provider-agnostic goes in `opencode.jsonc`
+once and every profile inherits it. Anything that differs per provider —
+`enabled_providers`, `model`, credentials — goes in the profile, and
+`check-config.py` keeps the base fail-closed so a missing profile cannot leak a
+provider.
+
+`mcp` is the worked example. The `markitdown` server converts PDF, DOCX, PPTX,
+XLSX, images and more to Markdown ([microsoft/markitdown][markitdown]); which
+provider is answering has no bearing on it, so it lives in the base layer and
+both profiles get it for free. It runs straight from PyPI through `uvx`, needs no
+credential, and pulls the full converter set on first use, because
+`markitdown-mcp` already depends on `markitdown[all]` — there is no `[all]` extra
+to ask for on the MCP package itself.
+
+Most of the MCP servers a session lists are *not* from this repository:
+`websearch`, `context7`, `grep_app` and `lsp` are injected by the
+oh-my-openagent plugin. Pick a name that does not collide with those, and expect
+the list to be longer than this config alone explains.
+
+[markitdown]: https://github.com/microsoft/markitdown
 
 ## Checking that the config is healthy
 
@@ -216,7 +252,14 @@ npx oh-my-openagent doctor                                        # config confo
 skills/update-opencode-config/check-plugin.sh      # plugin build vs npm
 skills/update-opencode-config/check-models.sh      # pins naming dead models
 skills/update-opencode-config/check-resolution.sh  # agents with no model
+opencode mcp list                                  # MCP servers, connected or not
 ```
+
+None of the scripts above look at MCP servers, so a server that fails to start
+is invisible to them — `opencode mcp list` is the only thing that says
+`connected`. It is worth a glance after changing the `mcp` block or after a
+`uvx`/`npx` cache wipe, since those servers are fetched on first use rather than
+installed.
 
 `check-config.py` runs as a git hook, so the invariants below are enforced on
 every commit once `prek install` has been run. Hooks are managed with
